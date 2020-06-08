@@ -1,0 +1,184 @@
+
+1 2
+1 3
+1 4
+1 6
+1 7
+
+2 1
+2 3
+2 5
+
+3 1
+3 4
+3 5
+3 6
+
+4 2
+4 6
+
+5 1
+5 6 
+
+6 1
+6 2
+6 4
+
+8 8
+8 9
+8 10
+8 11
+
+9 8
+9 11
+
+11 8
+11 12
+
+12 8 
+12 9
+12 10
+
+
+13 0
+13 1
+13 3
+13 4
+13 6
+13 7
+13 9 
+13 11
+13 12
+13 14
+
+
+
+14 3
+14 4
+14 6
+14 7
+14 9 
+14 13
+14 14
+
+
+
+
+
+orkut-5-k4-5-5-2-5
+orkut-5-k4-5-5-5-5
+
+orkut-5-k4-25-5-2-5
+orkut-5-k4-5-25-2-5
+orkut-5-k4-5-5-2-25
+
+orkut-5-k4-25-25-2-25
+orkut-5-k4-25-25-5-25
+
+orkut-5-k4-50-50-2-50
+orkut-5-k4-50-50-5-50
+orkut-5-k4-50-50-25-50
+
+
+
+227219688  15,512           0h0m3s  0h0m1s 
+orkut-5-k4-5-5-2-5
+224635565  15,335             0h0m3s  0h0m1s
+orkut-5-k4-5-5-5-5
+
+226576766  15,468            0h0m4s  0h0m1s
+orkut-5-k4-25-5-2-5
+227010224  15,498              0h0m6s  0h0m1s
+orkut-5-k4-5-25-2-5 
+223286960  15,243              0h0m4s  0h0m1s  
+orkut-5-k4-5-5-2-25
+
+221706712  15,135           0h0m14s  0h0m1s
+orkut-5-k4-25-25-2-25
+219358801  14,975            0h0m15s  0h0m1s
+orkut-5-k4-25-25-5-25  
+
+220735623  15,069       0h0m27s  0h0m1s 
+orkut-5-k4-50-50-2-50  
+218454405  14,913        0h0m26s  0h0m1s
+orkut-5-k4-50-50-5-50
+218601168  14,923        0h0m27s  0h0m2s
+orkut-5-k4-50-50-25-50  
+
+
+
+
+2778416290  15,137   0h15m32s
+twitter2010_5_k4_5_5_2_5
+2742955048  14,944  0h15m31s
+twitter2010_5_k4_5_5_5_5
+2746561087  14,963  0h15m23s
+twitter2010_5_k4_5_5_25_5
+
+
+2790219843  15,202   0h18m54s
+twitter2010_5_k4_50_5_2_5
+2764039788  15,059   0h15m48s
+twitter2010_5_k4_5_50_2_5
+2718437074  14,811   0h15m33s
+twitter2010_5_k4_5_5_2_50
+
+2696343253  14,690  0h22m53s
+twitter2010_5_k4_50_50_2_50
+2664033183  14,514  0h22m53s
+twitter2010_5_k4_50_50_5_50
+2665453508  14,522  0h22m53s
+twitter2010_5_k4_50_50_25_50
+
+
+
+
+
+uk-2007-05  n=105896434 e=3738733648
+
+1078791577  5,877  0h28m54s
+uk_5_k4_5_5_2_5
+ 
+1075639467  5,860  0h28m42s
+uk_5_k4_5_5_5_5
+
+
+1170714534  6,378  0h28m30s
+uk_5_k4_5_5_25_5
+
+1220050235  6,647  0h31m24s
+uk_5_k4_50_5_2_5
+
+
+922583354  5,026  0h28m48s
+uk_5_k4_5_50_2_5
+
+
+926300705  5,047  0h28m41s
+uk_5_k4_5_5_2_50
+
+807363801  4,399  0h34m36s
+uk_5_k4_50_50_2_50
+
+803098221  4,375  0h34m38s
+uk_5_k4_50_50_5_50
+
+834497883  4,546  0h34m25s
+uk_5_k4_50_50_25_50
+
+
+
+
+
+
+
+
+
+
+
+/home/danisch/DATA/WebGraph/uk-2007-05/net.txt
+
+./exec_writeCAL 5 /home/danisch/DATA/WebGraph/twitter2010/net.txt  0 ./../databis/twitter2010_5_k4_5_5_2_5 4 4     5  5  2  5  && ./exec_writeCAL 5 /home/danisch/DATA/WebGraph/twitter2010/net.txt  0 ./../databis/twitter2010_5_k4_5_5_5_5 4 4     5  5  5  5  && ./exec_writeCAL 5 /home/danisch/DATA/WebGraph/twitter2010/net.txt  0 ./../databis/twitter2010_5_k4_5_5_25_5 4 4    5  5  25 5  &&  ./exec_writeCAL 5 /home/danisch/DATA/WebGraph/twitter2010/net.txt  0 ./../databis/twitter2010_5_k4_50_5_2_5 4 4    50 5  2  5  && ./exec_writeCAL 5 /home/danisch/DATA/WebGraph/twitter2010/net.txt  0 ./../databis/twitter2010_5_k4_5_50_2_5 4 4    5  50 2  5  && ./exec_writeCAL 5 /home/danisch/DATA/WebGraph/twitter2010/net.txt  0 ./../databis/twitter2010_5_k4_5_5_2_50 4 4    5  5  2  50 && ./exec_writeCAL 5 /home/danisch/DATA/WebGraph/twitter2010/net.txt  0 ./../databis/twitter2010_5_k4_50_50_2_50 4 4  50 50 2  50 && ./exec_writeCAL 5 /home/danisch/DATA/WebGraph/twitter2010/net.txt  0 ./../databis/twitter2010_5_k4_50_50_5_50 4 4  50 50 5  50 && ./exec_writeCAL 5 /home/danisch/DATA/WebGraph/twitter2010/net.txt  0 ./../databis/twitter2010_5_k4_50_50_25_50 4 4 50 50 25 50
+
+
+//

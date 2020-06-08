@@ -18,6 +18,6 @@ uint64_t func(uint64_t v1,uint64_t v2);
 
 uint64_t inv_func(uint64_t val,uint64_t x);
 
-void renumbering(char *path, uint8_t ign, uint8_t sv);
+void renumbering(char *path, uint8_t sv);
 
 #endif

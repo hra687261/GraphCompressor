@@ -57,7 +57,6 @@ uint8_t getK();
 
 void printK();
 
-
 uint8_t *(*get_encoding_function(uint8_t id))(uint8_t *arr, uint64_t *u, uint64_t val);
 
 uint64_t (*get_decoding_function(uint8_t id))(uint8_t *arr, uint64_t *s);

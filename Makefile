@@ -1,23 +1,31 @@
 CC=gcc -std=gnu99
-CFLAGS=-g -Wall -Wextra -ggdb3 
-LDFLAGS= -lm
-EXEC=exec exec_writeCAL exec_readCAL
+CCE=$(CC) -O3 -o
+CFLAGS= -g -Wall -Wextra
+LDFLAGS=-lm
+EXEC=exec writeAL readAL writeCAL readCAL
 OBJ=exec.o tools.o bitArray.o integerEncoding.o integerGeneration.o exp.o adjList.o compAdjListG.o compAdjListCL.o compAdjListCB.o compAdjListI.o compAdjList.o
 OBJBIS=tools.o bitArray.o integerEncoding.o compAdjListG.o compAdjListCL.o compAdjListCB.o compAdjListI.o compAdjList.o
 
 all: $(EXEC)
 	
 exec: $(OBJ)
-	$(CC) -O3 -o $@ $^ $(LDFLAGS)  
+	$(CCE) $@ $^ $(LDFLAGS)  
 	
-exec_writeCAL : exec_writeCAL.o $(OBJBIS)
-	$(CC) -O3 -o $@ $^ $(LDFLAGS)
+writeAL : writeAL.o $(OBJBIS)
+	$(CCE) $@ $^ $(LDFLAGS)
 
-exec_readCAL : exec_readCAL.o $(OBJBIS)
-	$(CC) -O3 -o $@ $^ $(LDFLAGS)
+readAL : readAL.o $(OBJBIS)
+	$(CCE) $@ $^ $(LDFLAGS)
+
+writeCAL : writeCAL.o $(OBJBIS)
+	$(CCE) $@ $^ $(LDFLAGS)
+
+readCAL : readCAL.o $(OBJBIS)
+	$(CCE) $@ $^ $(LDFLAGS)
+
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -O3 -o $@ 
 
 clean:
-	rm -rf *.o exec exec_writeCAL exec_readCAL
+	rm -rf *.o exec writeAL readAL writeCAL readCAL

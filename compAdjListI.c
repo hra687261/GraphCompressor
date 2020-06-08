@@ -1,25 +1,24 @@
 #include "compAdjListI.h"
 
 
-void free_CompAdjListI(CompAdjListI *a_l) {
-  free(a_l->adj);
-  free(a_l->cd);
-  free(a_l);
+void free_CompAdjListI(CompAdjListI *cali) {
+  free(cali->adj);
+  free(cali->cd);
+  free(cali);
 }
 
 
-CompAdjListI *load_CompAdjListI(char *path, uint8_t ign,
+CompAdjListI *load_CompAdjListI(char *path,
   uint8_t *encoding_function(uint8_t *arr, uint64_t *u, uint64_t val),
   uint64_t expl_function(uint64_t val),
   uint64_t *u,  uint8_t ws, 
-  uint8_t mrc, uint8_t threshold)//,  uint64_t tmptmptmpv);
+  uint8_t mrc, uint8_t threshold)
 {
-  uint64_t i, j, l = 100;
-  char *line = malloc(sizeof(char) * l);
-  CompAdjListI *alg = malloc(sizeof(CompAdjListI));
-  alg->n=0;
-  alg->e=0;
-  alg->th=threshold;
+  uint64_t i, j;
+  CompAdjListI *cali = malloc(sizeof(CompAdjListI));
+  cali->n=0;
+  cali->e=0;
+  cali->th=threshold;
   uint64_t v1, v2, 
     // upper bound of the memory size we'll need to allocate (arbitrary)
     alloc_ub = 0,
@@ -31,8 +30,6 @@ CompAdjListI *load_CompAdjListI(char *path, uint8_t ign,
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // counting the max degree, the number of nodes and the number of edges
   FILE *file = fopen(path, "r");
-  for (i = 0; i < ign; i++)
-    assert(fgets(line, l, file));  
   while (fscanf(file, "%lu %lu", & v1, & v2) == 2) {
     if (v1 == precv) {
       new_deg++;
@@ -42,19 +39,19 @@ CompAdjListI *load_CompAdjListI(char *path, uint8_t ign,
       new_deg = 1;
       precv = v1;
     }
-    alg->n = max3(alg->n, v1, v2);
-    alg->e++;
+    cali->n = max3(cali->n, v1, v2);
+    cali->e++;
     alloc_ub += expl_function(v2)*2;
   }
-  alg->cd = calloc((alg->n + 2), sizeof(uint64_t));
-  alg->md = max_deg; 
-  alg->adj = calloc(alloc_ub / 8 + 1, sizeof(uint8_t));
+  cali->cd = calloc((cali->n + 2), sizeof(uint64_t));
+  cali->md = max_deg; 
+  cali->adj = calloc(alloc_ub / 8 + 1, sizeof(uint8_t));
 
 
-  uint64_t wa_len = ws + 1,
+  uint64_t wcalien = ws + 1,
     
     // max number of intervals 
-    m_nb_intrs = (max_deg - 1)/alg->th + 1;
+    m_nb_intrs = (max_deg - 1)/cali->th + 1;
   
   uint64_t c_w_ind = 0, it_w_ind = 0, ref_w_ind,
     /*
@@ -72,10 +69,10 @@ CompAdjListI *load_CompAdjListI(char *path, uint8_t ign,
     window_nodes :
       contains the nodes that are part of the window
     */    
-    *window_succ = malloc(max_deg * wa_len * sizeof(uint64_t)),
-    *window_pos = malloc(max_deg * wa_len * sizeof(uint64_t)),
-    *window_lens = calloc(wa_len, sizeof(uint64_t)),
-    *window_nodes = calloc(wa_len, sizeof(uint64_t)),
+    *window_succ = malloc(max_deg * wcalien * sizeof(uint64_t)),
+    *window_pos = malloc(max_deg * wcalien * sizeof(uint64_t)),
+    *window_lens = calloc(wcalien, sizeof(uint64_t)),
+    *window_nodes = calloc(wcalien, sizeof(uint64_t)),
     
     c_node=0, it_node, 
     tmppos_2, nb_v_tocode,
@@ -97,7 +94,7 @@ CompAdjListI *load_CompAdjListI(char *path, uint8_t ign,
     contains the legnth of the reference chain of each 
     ex : (15 references 12 which references 5 -> ref_cnts[5]=0, ref_cnts[12]=1, ref_cnts[15]=2  )
     */
-    *ref_cnts = calloc(alg->n + 1, sizeof(uint8_t)),
+    *ref_cnts = calloc(cali->n + 1, sizeof(uint8_t)),
 
     /* 
     array of 0s and 1s in which coded[x]=1 if x 
@@ -122,17 +119,14 @@ CompAdjListI *load_CompAdjListI(char *path, uint8_t ign,
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // compressing the edge list
   rewind(file);
-  for (i = 0; i < ign; i++)
-    assert(fgets(line, l, file));
-
-  for(uint64_t ind=0;ind<alg->e+1;ind++){
-    if(ind < alg->e)
+  for(uint64_t ind=0;ind<cali->e+1;ind++){
+    if(ind < cali->e)
       assert(fscanf(file, "%lu %lu", &v1, &v2) == 2);
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
     if (v1 == window_nodes[c_w_ind] 
       && ind > 0 
-      && ind < alg->e) 
+      && ind < cali->e) 
     {
       tmppos_2 = c_w_ind * max_deg + window_lens[c_w_ind];
       window_succ[tmppos_2] = v2;
@@ -140,7 +134,7 @@ CompAdjListI *load_CompAdjListI(char *path, uint8_t ign,
       window_lens[c_w_ind]++;
     } else {
       //////////////////////////////////////////////////////////////////////////////////////////////////////////
-      it_w_ind = (c_w_ind + 1) % wa_len;
+      it_w_ind = (c_w_ind + 1) % wcalien;
       c_node = window_nodes[c_w_ind];
       it_node = window_nodes[it_w_ind];
 
@@ -150,9 +144,9 @@ CompAdjListI *load_CompAdjListI(char *path, uint8_t ign,
       uint64_t
         *c_arr = window_succ + max_deg * c_w_ind,
         *ca_pos = window_pos + max_deg * c_w_ind,
-        ca_len = window_lens[c_w_ind];
+        ccalien = window_lens[c_w_ind];
 
-      if(ca_len > 0){
+      if(ccalien > 0){
 
         // choosing the reference list
         while (it_w_ind != c_w_ind &&
@@ -164,7 +158,7 @@ CompAdjListI *load_CompAdjListI(char *path, uint8_t ign,
           nb_v_tocode = 0;
           i = 0;
           j = 0;
-          while (i < it_len && j < ca_len) {
+          while (i < it_len && j < ccalien) 
             if (it_arr[i] == c_arr[j]) {
               nb_v_tocode++;
               i++;
@@ -174,7 +168,7 @@ CompAdjListI *load_CompAdjListI(char *path, uint8_t ign,
             } else {
               i++;
             }
-          }
+          
 
           if (nb_v_tocode > nbv_refc) {
             nbv_refc = nb_v_tocode;
@@ -182,12 +176,12 @@ CompAdjListI *load_CompAdjListI(char *path, uint8_t ign,
             ref_w_ind = it_w_ind;
           }
           
-          it_w_ind = (it_w_ind + 1) % wa_len;
+          it_w_ind = (it_w_ind + 1) % wcalien;
           it_node = window_nodes[it_w_ind];
         }
         
         //writing the reference
-        encoding_function(alg->adj, u, ref);
+        encoding_function(cali->adj, u, ref);
         
         if (ref > 0){
           //updating the ref count
@@ -206,10 +200,10 @@ CompAdjListI *load_CompAdjListI(char *path, uint8_t ign,
             *ra_pos = window_pos + max_deg * ref_w_ind,
             
             // the length of the referenced list 
-            ra_len = window_lens[ref_w_ind];
+            rcalien = window_lens[ref_w_ind];
 
           // building the copy_list
-          while (ra_it < ra_len && ca_it < ca_len) {
+          while (ra_it < rcalien && ca_it < ccalien) 
             if (r_arr[ra_it] == c_arr[ca_it]) {
               ca_pos[ca_it] = p1++;
               coded[ca_pos[ca_it++]] = 1;
@@ -222,11 +216,11 @@ CompAdjListI *load_CompAdjListI(char *path, uint8_t ign,
               ra_it++;
               //copy_list[ra_pos[ra_it++]] = 0;
             }
-          }
+          
 
           // updating the positions of the nodes in the current array (the one we're about to compress)
           uint64_t cpt=0;
-          for(i=0;i<ra_len;i++){
+          for(i=0;i<rcalien;i++){
             if(copy_list[i]){
               cpt+=copy_list[i];
               copy_list[i]=cpt;
@@ -235,7 +229,7 @@ CompAdjListI *load_CompAdjListI(char *path, uint8_t ign,
 
           ra_it=0;
           ca_it=0;
-          while (ra_it < ra_len && ca_it < ca_len){
+          while (ra_it < rcalien && ca_it < ccalien)
             if (r_arr[ra_it] == c_arr[ca_it]) {   
               ca_pos[ca_it] = copy_list[ra_pos[ra_it]]-1;   
               copy_list[ra_pos[ra_it]] = 1;
@@ -246,22 +240,22 @@ CompAdjListI *load_CompAdjListI(char *path, uint8_t ign,
             } else { 
               ra_it++;
             }
-          }
+          
           // the first block is always a 1 block
           uint8_t cv=1;
           // the number copy blocks
           uint64_t nb_blocks=1;
 
           //counting the number of blocks
-          for (i = 0; i < ra_len; i++) {
+          for (i = 0; i < rcalien; i++) 
             if(copy_list[i] != cv){
               nb_blocks++;
               cv=!cv;
             }
-          }
+          
           
           //writing the number of copy blocks
-          encoding_function(alg->adj, u, nb_blocks);
+          encoding_function(cali->adj, u, nb_blocks);
           
           uint64_t 
             cpt0=0,
@@ -274,31 +268,28 @@ CompAdjListI *load_CompAdjListI(char *path, uint8_t ign,
           ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
           //writing the copy blocks
           cv=1;
-          for (i = 0; i < ra_len && cpt < nb_blocks-1; i++) {
+          for (i = 0; i < rcalien && cpt < nb_blocks-1; i++) {
             if(cv){
               if(copy_list[i])
                 cpt1++;
               else{
-                encoding_function(alg->adj, u, cpt1);
+                encoding_function(cali->adj, u, cpt1);
                 cpt++;
                 cpt0=1;
                 cv=!cv;
               }
             }else{
               if(copy_list[i]){
-                encoding_function(alg->adj, u, cpt0);
+                encoding_function(cali->adj, u, cpt0);
                 cpt++;
                 cpt1=1;
                 cv=!cv;
               }else
                 cpt0++;
             }
-            // we don't write the last block
-            //if(cpt==nb_blocks-1)
-            //  break;
             copy_list[i]=0;
           }
-          while(i<ra_len){
+          while(i<rcalien){
             copy_list[i]=0;
             i++;
           }
@@ -330,8 +321,8 @@ CompAdjListI *load_CompAdjListI(char *path, uint8_t ign,
           { 
             cpt++;
             c_rightext=v;
-            if(i==ca_len-1){
-              if(cpt>=alg->th){
+            if(i==ccalien-1){
+              if(cpt>=cali->th){
                 if(c_leftext >= prec_rightext){
                   intrvs[1]=0;
                   intrvs[2+intrvs[0]]=c_leftext-prec_rightext;
@@ -339,7 +330,7 @@ CompAdjListI *load_CompAdjListI(char *path, uint8_t ign,
                   intrvs[1]=1;
                   intrvs[2+intrvs[0]]=prec_rightext-c_leftext;
                 }
-                intrvs[2+m_nb_intrs+intrvs[0]]=cpt-alg->th;
+                intrvs[2+m_nb_intrs+intrvs[0]]=cpt-cali->th;
                 intrvs[0]++;
                 nbv_intrvc+=cpt;
                 for(j=i-cpt+1;j<=i;j++){
@@ -348,7 +339,7 @@ CompAdjListI *load_CompAdjListI(char *path, uint8_t ign,
               }
             }
           } else {
-            if(cpt>=alg->th){
+            if(cpt>=cali->th){
               if(c_leftext >= prec_rightext){
                 intrvs[1]=0;
                 intrvs[2+intrvs[0]]=c_leftext-prec_rightext;
@@ -356,7 +347,7 @@ CompAdjListI *load_CompAdjListI(char *path, uint8_t ign,
                 intrvs[1]=1;
                 intrvs[2+intrvs[0]]=prec_rightext-c_leftext;
               }
-              intrvs[2+m_nb_intrs+intrvs[0]]=cpt-alg->th;
+              intrvs[2+m_nb_intrs+intrvs[0]]=cpt-cali->th;
               intrvs[0]++;
               nbv_intrvc+=cpt;
               for(j=i-cpt;j<i;j++){
@@ -369,16 +360,13 @@ CompAdjListI *load_CompAdjListI(char *path, uint8_t ign,
           }
           precv=v;
           i++;
-        }while( i < ca_len );
+        }while( i < ccalien );
           
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
         uint64_t
           p1=nbv_refc,
           p2=nbv_refc+nbv_intrvc;
 
-        for(i=0;i<ca_len;i++){
+        for(i=0;i<ccalien;i++){
           if(coded[ca_pos[i]]==2) {
             ca_pos[i]=p1++;
           } else if(coded[ca_pos[i]]==0) {
@@ -387,42 +375,31 @@ CompAdjListI *load_CompAdjListI(char *path, uint8_t ign,
         }
 
         //writing the number of intervals
-        encoding_function(alg->adj,u,intrvs[0]);
+        encoding_function(cali->adj,u,intrvs[0]);
       
         if(intrvs[0] > 0){
-          /*
-            intrvs[1]=0 if the first left extreme is greater than the node
-            intrvs[1]=1 otherwise
-          */
           if(intrvs[1]){
-            set_nth_bit(alg->adj,u,*u);
+            set_nth_bit(cali->adj,u,*u);
           }else{
-            clear_nth_bit(alg->adj,u,*u);
+            clear_nth_bit(cali->adj,u,*u);
           }
 
           // writing the lengths of the intervals
           for(i=0;i<intrvs[0];i++){
-            encoding_function(alg->adj,u,intrvs[2+i]);
+            encoding_function(cali->adj,u,intrvs[2+i]);
           }
           
           //writing the the left extremes
           for(i=0;i<intrvs[0];i++){
-            encoding_function(alg->adj,u,intrvs[2+m_nb_intrs+i]);
+            encoding_function(cali->adj,u,intrvs[2+m_nb_intrs+i]);
           }  
         }
 
-       /*for(i=0;i<max_deg;i++){
-         if(coded[i])
-           coded[i]=0;
-         if(copy_list[i])
-          copy_list[i]=0;
-       }*/
-
       // writing the leftover values, the ones that weren't compressed
-      for(i=0;i<ca_len;i++){
+      for(i=0;i<ccalien;i++){
         coded[i]=0;
         if(ca_pos[i] > nbv_refc+nbv_intrvc){
-          encoding_function(alg->adj, u, 
+          encoding_function(cali->adj, u, 
             c_arr[i] - precv - 1);
           precv = c_arr[i];
           continue;
@@ -431,22 +408,22 @@ CompAdjListI *load_CompAdjListI(char *path, uint8_t ign,
         //the first left over node
         if(ca_pos[i] == nbv_refc+nbv_intrvc){
           precv = c_arr[i];
-          encoding_function(alg->adj, u, 
+          encoding_function(cali->adj, u, 
             func(c_node, precv));
         }
       }
     }
 
     // storing the starting bit adress of the next node
-    alg->cd[c_node+1]=*u;
+    cali->cd[c_node+1]=*u;
     // if there are nodes that don't have successors, their starting bit is address is equal to the  
     // ending bit address of the last node that has it's list of successors coded
-    if(precun>0 && alg->cd[c_node]==0){
+    if(precun>0 && cali->cd[c_node]==0){
       for(i=precun+1;i<=c_node;i++)
-        alg->cd[i]=alg->cd[precun];
+        cali->cd[i]=cali->cd[precun];
     }
     precun=c_node+1;
-    c_w_ind = (c_w_ind + 1) % wa_len;
+    c_w_ind = (c_w_ind + 1) % wcalien;
     window_nodes[c_w_ind] = v1;
 
     tmppos_2 = c_w_ind * max_deg;
@@ -458,15 +435,14 @@ CompAdjListI *load_CompAdjListI(char *path, uint8_t ign,
   }
 
 
-  if(alg->n+1 > precun)
-    for(i=precun;i<=alg->n+1;i++)
-      alg->cd[i] = *u;
+  if(cali->n+1 > precun)
+    for(i=precun;i<=cali->n+1;i++)
+      cali->cd[i] = *u;
       
-  alg->nbb = (*u - 1) / 8 + 1;
-  alg->adj = realloc(alg->adj, alg->nbb * sizeof(uint8_t));
+  cali->nbb = (*u - 1) / 8 + 1;
+  cali->adj = realloc(cali->adj, cali->nbb * sizeof(uint8_t));
 
   fclose(file);
-  free(line);
   free(window_succ);
   free(window_pos);
   free(window_lens);
@@ -476,41 +452,41 @@ CompAdjListI *load_CompAdjListI(char *path, uint8_t ign,
   free(intrvs);
   free(ref_cnts);
 
-  return alg;
+  return cali;
 }
 
 
-void decode_CompAdjListI(CompAdjListI *alg, uint64_t node, 
+void decode_CompAdjListI(CompAdjListI *cali, uint64_t node, 
   uint64_t *dest, uint64_t *dlen, uint8_t isfc,
   uint64_t decoding_function(uint8_t *arr, uint64_t *s),
   uint64_t m_nb_intrs,uint64_t *intrvs) 
 {
   *dlen=0;
-  uint64_t u=alg->cd[node];
+  uint64_t u=cali->cd[node];
 
   if(intrvs == NULL){
     isfc=1;
-    m_nb_intrs = (alg->md - 1)/alg->th+1;
+    m_nb_intrs = (cali->md - 1)/cali->th+1;
     intrvs = malloc((m_nb_intrs*2+2)*sizeof(uint64_t));
   }
 
-  if(u < alg->cd[node + 1]){
+  if(u < cali->cd[node + 1]){
      uint64_t
-      ref=decoding_function(alg->adj,&u),
+      ref=decoding_function(cali->adj,&u),
       cpt=0,cptdecoded=0, 
       cptblocks=0, i=0,j, 
       block_size, nb_blocks;
 
     //DECODING COPY BLOCKS
     if(ref>0) {
-      decode_CompAdjListI(alg, node-ref, dest, dlen, 0,
+      decode_CompAdjListI(cali, node-ref, dest, dlen, 0,
         decoding_function, m_nb_intrs, intrvs);
 
       uint8_t cv=1;
-      nb_blocks=decoding_function(alg->adj,&u);
+      nb_blocks=decoding_function(cali->adj,&u);
 
       while(cptblocks<nb_blocks-1){
-        block_size=decoding_function(alg->adj,&u);
+        block_size=decoding_function(cali->adj,&u);
         if(cv){
           for(i=0;i<block_size;i++){
             dest[cptdecoded++]=dest[cpt++];
@@ -534,25 +510,25 @@ void decode_CompAdjListI(CompAdjListI *alg, uint64_t node,
     //DECODING INTERVALS
     uint64_t left_ext, p_right_ext, len;
 
-    intrvs[0] = decoding_function(alg->adj,&u);
+    intrvs[0] = decoding_function(cali->adj,&u);
 
     if(intrvs[0] > 0){
-      intrvs[1] = read_nth_bit(alg->adj, u++);
+      intrvs[1] = read_nth_bit(cali->adj, u++);
 
       for(i=0;i<intrvs[0];i++){
         intrvs[2+i] = 
-          decoding_function(alg->adj,&u);
+          decoding_function(cali->adj,&u);
       }
       for(i=0;i<intrvs[0];i++){
         intrvs[2+m_nb_intrs+i] = 
-          decoding_function(alg->adj,&u);
+          decoding_function(cali->adj,&u);
       }
 
       if(intrvs[1])
         left_ext=node-intrvs[2];
       else
         left_ext=intrvs[2]+node;
-      len=intrvs[2+m_nb_intrs]+alg->th;
+      len=intrvs[2+m_nb_intrs]+cali->th;
 
       for(i=0;i<len;i++)
         dest[cptdecoded++]=left_ext+i;
@@ -560,7 +536,7 @@ void decode_CompAdjListI(CompAdjListI *alg, uint64_t node,
 
       for(i=1;i<intrvs[0];i++){
         left_ext=intrvs[2+i]+p_right_ext+2;
-        len=intrvs[2+m_nb_intrs+i]+alg->th;
+        len=intrvs[2+m_nb_intrs+i]+cali->th;
         for(j=0;j<len;j++)
           dest[cptdecoded++]=left_ext+j;
         p_right_ext=dest[cptdecoded-1];
@@ -568,11 +544,11 @@ void decode_CompAdjListI(CompAdjListI *alg, uint64_t node,
     }
 
     //DECODING THE LEFT OVER VALUES
-    if(u<alg->cd[node+1]){
-      dest[cptdecoded++]=inv_func(node,decoding_function(alg->adj,&u));
+    if(u<cali->cd[node+1]){
+      dest[cptdecoded++]=inv_func(node,decoding_function(cali->adj,&u));
           
-      while(u < alg->cd[node + 1]){
-        dest[cptdecoded]=dest[cptdecoded-1]+decoding_function(alg->adj,&u)+1;
+      while(u < cali->cd[node + 1]){
+        dest[cptdecoded]=dest[cptdecoded-1]+decoding_function(cali->adj,&u)+1;
         cptdecoded++;
       }
     }
@@ -584,7 +560,7 @@ void decode_CompAdjListI(CompAdjListI *alg, uint64_t node,
 
 
 
-void write_CompAdjListI(CompAdjListI *alg, uint8_t id, char *path)
+void write_CompAdjListI(CompAdjListI *cali, uint8_t id, char *path)
 {
     FILE *file=fopen(path,"wb");
     uint64_t i;
@@ -595,18 +571,18 @@ void write_CompAdjListI(CompAdjListI *alg, uint8_t id, char *path)
         fwrite(&k,sizeof(uint8_t),1,file);
     }
 
-    fwrite(&alg->n,sizeof(uint64_t),1,file);
-    fwrite(&alg->e,sizeof(uint64_t),1,file);
-    fwrite(&alg->md,sizeof(uint64_t),1,file);
+    fwrite(&cali->n,sizeof(uint64_t),1,file);
+    fwrite(&cali->e,sizeof(uint64_t),1,file);
+    fwrite(&cali->md,sizeof(uint64_t),1,file);
    
-    fwrite(&alg->nbb,sizeof(uint64_t),1,file);
-    fwrite(&alg->th,sizeof(uint8_t),1,file);
+    fwrite(&cali->nbb,sizeof(uint64_t),1,file);
+    fwrite(&cali->th,sizeof(uint8_t),1,file);
 
-    for(i=0;i<alg->n+2;i++)
-      fwrite(&alg->cd[i],sizeof(uint64_t),1,file);
+    for(i=0;i<cali->n+2;i++)
+      fwrite(&cali->cd[i],sizeof(uint64_t),1,file);
    
-    for(i=0;i<alg->nbb;i++)
-      fwrite(&alg->adj[i], sizeof(uint8_t), 1, file);
+    for(i=0;i<cali->nbb;i++)
+      fwrite(&cali->adj[i], sizeof(uint8_t), 1, file);
 
     fclose(file);
 }
@@ -616,7 +592,7 @@ CompAdjListI *read_CompAdjListI(char *path, uint8_t *id)
     FILE *file=fopen(path,"rb");
     uint64_t i;
     uint8_t k=0;
-    CompAdjListI *alg=malloc(sizeof(CompAdjListI));
+    CompAdjListI *cali=malloc(sizeof(CompAdjListI));
 
     assert( fread(id, sizeof(uint8_t), 1, file) == 1);
     if(*id==4){
@@ -624,39 +600,39 @@ CompAdjListI *read_CompAdjListI(char *path, uint8_t *id)
         setK(k);
     }
 
-    assert(fread(&alg->n,sizeof(uint64_t),1,file) == 1);
-    assert(fread(&alg->e,sizeof(uint64_t),1,file) == 1);
-    assert(fread(&alg->md,sizeof(uint64_t),1,file) == 1);
+    assert(fread(&cali->n,sizeof(uint64_t),1,file) == 1);
+    assert(fread(&cali->e,sizeof(uint64_t),1,file) == 1);
+    assert(fread(&cali->md,sizeof(uint64_t),1,file) == 1);
 
-    assert(fread(&alg->nbb,sizeof(uint64_t),1,file) == 1);
-    assert(fread(&alg->th,sizeof(uint8_t),1,file) == 1);
+    assert(fread(&cali->nbb,sizeof(uint64_t),1,file) == 1);
+    assert(fread(&cali->th,sizeof(uint8_t),1,file) == 1);
 
 
-    alg->cd=malloc((alg->n+2)*sizeof(uint64_t));
-    alg->adj=malloc(alg->nbb*sizeof(uint8_t));
+    cali->cd=malloc((cali->n+2)*sizeof(uint64_t));
+    cali->adj=malloc(cali->nbb*sizeof(uint8_t));
 
-    for(i=0;i<alg->n+2;i++)
-      assert(fread(&alg->cd[i],sizeof(uint64_t),1,file) == 1);
+    for(i=0;i<cali->n+2;i++)
+      assert(fread(&cali->cd[i],sizeof(uint64_t),1,file) == 1);
 
-    for(i=0;i<alg->nbb;i++)
-      assert(fread(&alg->adj[i],sizeof(uint8_t),1,file) == 1);
+    for(i=0;i<cali->nbb;i++)
+      assert(fread(&cali->adj[i],sizeof(uint8_t),1,file) == 1);
     
     fclose(file);
-    return alg;
+    return cali;
 }
 
 uint64_t *bfs_CompAdjListI(
-    CompAdjListI *alg,uint64_t curr, uint64_t *nbvals,
+    CompAdjListI *cali,uint64_t curr, uint64_t *nbvals,
     uint64_t decoding_function(uint8_t *arr,uint64_t *s))
 {
-  uint64_t m_nb_intrs=(alg->md - 1)/alg->th+1;
+  uint64_t m_nb_intrs=(cali->md - 1)/cali->th+1;
   uint64_t v,
     s_file=0, e_file=0,
-    *file=malloc((alg->n+1)*sizeof(uint64_t)),
-    *dest=malloc((alg->n+1)*sizeof(uint64_t)),
+    *file=malloc((cali->n+1)*sizeof(uint64_t)),
+    *dest=malloc((cali->n+1)*sizeof(uint64_t)),
     *intrvs = malloc((m_nb_intrs*2+2)*sizeof(uint64_t)),
     dlen=0;
-  uint8_t *seen=calloc(alg->n+1,sizeof(uint8_t));
+  uint8_t *seen=calloc(cali->n+1,sizeof(uint8_t));
   *nbvals=0;
   
   file[e_file++]=curr;
@@ -665,7 +641,7 @@ uint64_t *bfs_CompAdjListI(
   for(uint64_t i=s_file;i<e_file;i++){   
     v=file[i];
     seen[v]=1;
-    decode_CompAdjListI(alg,v,dest,&dlen,0,
+    decode_CompAdjListI(cali,v,dest,&dlen,0,
       decoding_function, m_nb_intrs, intrvs);
     
     

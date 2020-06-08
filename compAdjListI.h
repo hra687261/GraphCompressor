@@ -5,20 +5,20 @@
 #include "integerEncoding.h"
 
 typedef struct _CompAdjListI{
-	uint64_t n; // number of nodes
-	uint64_t e; // number of edges
-  uint64_t md; // maximum degree of nodes
+	uint64_t n;   // number of nodes
+	uint64_t e;   // number of edges
+  uint64_t md;  // maximum degree of nodes
 
   uint64_t *cd; // n's neighbours are in [ cd[n] .. cd[n+1] [
-  uint8_t *adj;
-  uint64_t nbb; //nb bytes used by adj
+  uint8_t *adj; // compressed successor lists
+  uint64_t nbb; // nb bytes used by adj
 
   uint8_t th; // threshold
 }CompAdjListI;
 
 void free_CompAdjListI(CompAdjListI *alg);
 
-CompAdjListI *load_CompAdjListI(char *path, uint8_t ign, 
+CompAdjListI *load_CompAdjListI(char *path,
   uint8_t *encoding_function(uint8_t *arr, uint64_t *u, uint64_t val), 
   uint64_t expl_function(uint64_t val), 
   uint64_t *u, uint8_t ws, 

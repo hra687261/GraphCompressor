@@ -6,6 +6,7 @@
 #include <math.h>
 #include <assert.h> 
 #include <time.h>
+
 #define EXP 2.718281828459045
 
 uint64_t *uniform_dist_ints(uint64_t nb_vals,uint64_t upper_bound);
@@ -15,6 +16,7 @@ uint64_t *power_dist_ints(uint64_t nb_vals,double alpha,uint64_t n);
 uint64_t *poisson_dist_ints(uint64_t nb_vals,double lambda);
 
 uint64_t *binomial_dist_ints(uint64_t nb_vals,uint64_t n,double p);
+
 
 
 //https://github.com/ESultanik/mtwister

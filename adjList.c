@@ -1,5 +1,12 @@
 #include "adjList.h"
 
+
+
+/**
+ * Initiates an AdjList
+ * 
+ * @return a reference to the AdjList
+ */
 AdjList *make_AdjList() 
 {
   AdjList *al = malloc (sizeof (AdjList));
@@ -10,6 +17,9 @@ AdjList *make_AdjList()
 	return al;
 }
 
+/**
+ * frees an AdjList and it's content
+ */
 void free_AdjList(AdjList *al) 
 {
   free (al->cd);
@@ -17,19 +27,25 @@ void free_AdjList(AdjList *al)
 	free (al);
 }
 
-AdjList *load_AdjListU(char *path, uint8_t ign) 
+
+/**
+ * Loads an undirected graph into an Adjlist
+ * 
+ * @param path path to a file containing and an list of edges 
+ *             (pairs of ints in a line separated by a space)
+ * @return the loaded AdjList
+ */
+AdjList *load_AdjListU(char *path) 
 {
-  uint64_t e1 = NB_NODES, l = 100, i, v1, v2, *d;
+  uint64_t e1 = NB_NODES, i, v1, v2, *d;
 	FILE *file;
-	char *line = malloc (sizeof (char) * l);
 	AdjList *g = make_AdjList ();
     file = fopen (path, "r");
     assert(file!=NULL);
-	
-  for (i = 0; i < ign; i++)
-		assert (fgets (line, l, file) != NULL);
-
 	d = calloc (e1, sizeof (uint64_t));
+
+  // counting the number of nodes, number of edges 
+  // and the number of neighbours of every node
 	while (fscanf (file, "%lu %lu", &v1, &v2) == 2)
 		{
 			g->n = max3 (g->n, v1, v2);
@@ -45,8 +61,9 @@ AdjList *load_AdjListU(char *path, uint8_t ign)
 			d[v1]++;
 			d[v2]++;
 		}
-	d = realloc (d, (g->n + 1) * sizeof (uint64_t));
+  
 
+	d = realloc (d, (g->n + 1) * sizeof (uint64_t));
 	g->cd = malloc ((g->n + 2) * sizeof (uint64_t));
 	g->cd[0] = 0;
 	for (i = 1; i < g->n + 2; i++)
@@ -57,8 +74,6 @@ AdjList *load_AdjListU(char *path, uint8_t ign)
 	d[g->n] = 0;
 
 	rewind (file);
-	for (i = 0; i < ign; i++)
-		assert (fgets (line, l, file) != NULL);
 
 	g->adj = malloc ((g->e * 2) * sizeof (uint64_t));
 	while (fscanf (file, "%lu %lu", &v1, &v2) == 2)
@@ -67,23 +82,25 @@ AdjList *load_AdjListU(char *path, uint8_t ign)
 			g->adj[g->cd[v2] + d[v2]++] = v1;
 		}
 	free (d);
-	free (line);
 	fclose (file);
 	return g;
 }
 
-
-AdjList *load_AdjList(char *path, uint8_t ign)
+/**
+ * Loads a directed graph into an Adjlist
+ * 
+ * @param path path to a file containing and an list of edges 
+ *             (pairs of ints in a line separated by a space)
+ * @return the loaded AdjList
+ */
+AdjList *load_AdjList(char *path)
 {
-  uint64_t e1 = NB_NODES, l = 100, i, v1, v2, *d;
+  uint64_t e1 = NB_NODES,  i, v1, v2, *d;
 	FILE *file;
-	char *line = malloc (sizeof (char) * l);
 	AdjList *g = make_AdjList ();
     file = fopen (path, "r");
     assert(file!=NULL);
 	
-  for (i = 0; i < ign; i++)
-		assert (fgets (line, l, file) != NULL);
 
 	d = calloc (e1, sizeof (uint64_t));
 	while (fscanf (file, "%lu %lu", &v1, &v2) == 2)
@@ -112,14 +129,11 @@ AdjList *load_AdjList(char *path, uint8_t ign)
 	d[g->n] = 0;
 
 	rewind (file);
-	for (i = 0; i < ign; i++)
-		assert (fgets (line, l, file) != NULL);
 
 	g->adj = malloc ((g->e * 2) * sizeof (uint64_t));
 	while (fscanf (file, "%lu %lu", &v1, &v2) == 2)
 		g->adj[g->cd[v1] + d[v1]++] = v2;
 	free (d);
-	free (line);
 	fclose (file);
 	return g;
 }
