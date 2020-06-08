@@ -66,7 +66,7 @@ void decode_with_window(
   uint64_t *ldecp,
   uint64_t decoding_function(uint8_t *arr, uint64_t *s));
 
-void normalize(CompAdjList *al, uint8_t *has_successors, double *pr);
+void normalize(CompAdjList *al, double *pr);
 
 double *power_iteration(
   CompAdjList *al, uint64_t nb_it, double alpha,

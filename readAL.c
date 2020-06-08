@@ -39,7 +39,7 @@ int main(int argc, char **argv)
       (t2 - t1) / 3600, ((t2 - t1) % 3600) / 60, ((t2 - t1) % 60));
 
     t2 = time(NULL);
-    bfs_res = bfs_CompAdjListG(al, firstn, NULL, & nbv, get_decoding_function(id));
+    bfs_res = bfs_CompAdjListG(al, firstn, &nbv, get_decoding_function(id));
     t3 = time(NULL);
 
     fprintf(stderr,
@@ -80,7 +80,7 @@ int main(int argc, char **argv)
       (t2 - t1) / 3600, ((t2 - t1) % 3600) / 60, ((t2 - t1) % 60));
 
     t2 = time(NULL);
-    bfs_res = bfs_CompAdjListCL(al, firstn, NULL, & nbv, get_decoding_function(id));
+    bfs_res = bfs_CompAdjListCL(al, firstn, & nbv, get_decoding_function(id));
 
     t3 = time(NULL);
     fprintf(stderr,
@@ -121,7 +121,7 @@ int main(int argc, char **argv)
       (t2 - t1) / 3600, ((t2 - t1) % 3600) / 60, ((t2 - t1) % 60));
 
     t2 = time(NULL);
-    bfs_res = bfs_CompAdjListCB(al, firstn, NULL, & nbv, get_decoding_function(id));
+    bfs_res = bfs_CompAdjListCB(al, firstn, &nbv, get_decoding_function(id));
 
     t3 = time(NULL);
     fprintf(stderr,
@@ -161,7 +161,7 @@ int main(int argc, char **argv)
       (t2 - t1) / 3600, ((t2 - t1) % 3600) / 60, ((t2 - t1) % 60));
 
     t2 = time(NULL);
-    bfs_res = bfs_CompAdjListI(al, firstn, & nbv, get_decoding_function(id));
+    bfs_res = bfs_CompAdjListI(al, firstn, &nbv, get_decoding_function(id));
 
     t3 = time(NULL);
     fprintf(stderr,
@@ -184,3 +184,6 @@ int main(int argc, char **argv)
   }
   return EXIT_SUCCESS;
 }
+
+
+

@@ -94,6 +94,9 @@ CompAdjListG *load_CompAdjListG(char *path,
   return calg;
 }
 
+/**
+ * Stores a CompAdjListG in a file.
+ */
 void write_CompAdjListG(CompAdjListG *calg, uint8_t id, char *path)
 {
   FILE *file = fopen(path, "wb");
@@ -118,6 +121,13 @@ void write_CompAdjListG(CompAdjListG *calg, uint8_t id, char *path)
   fclose(file);
 }
 
+
+/**
+ * Reads a CompAdjListG from a file.
+ * 
+ * id: pointer to a uint8_t, in which the id of the function that was used 
+ *     to encode the successor lists of the CompAdjListG will be stored.
+ */
 CompAdjListG *read_CompAdjListG(char *path, uint8_t *id)
 {
   FILE *file = fopen(path, "rb");
@@ -147,8 +157,12 @@ CompAdjListG *read_CompAdjListG(char *path, uint8_t *id)
   return calg;
 }
 
-uint64_t *bfs_CompAdjListG(CompAdjListG *calg, uint64_t curr,
-  uint8_t *seen, uint64_t *nbvals,
+/**
+ * Runs the Breadth-First Search algorithm on the graph stored in the CompAdjListG
+ * starting from the node "curr", 
+ */
+uint64_t *bfs_CompAdjListG(
+  CompAdjListG *calg, uint64_t curr, uint64_t *nbvals,
   uint64_t decoding_function(uint8_t *arr, uint64_t *s))
 {
   uint64_t i, v1, v2, u,
@@ -157,11 +171,7 @@ uint64_t *bfs_CompAdjListG(CompAdjListG *calg, uint64_t curr,
   uint8_t sv;
   *nbvals = 0;
 
-  if (seen == NULL) {
-    seen = calloc(calg->n + 1, sizeof(uint8_t));
-  } else
-  if (seen[curr] == 1)
-    return NULL;
+  uint8_t *seen = calloc(calg->n + 1, sizeof(uint8_t));
 
   file[e_file++] = curr;
   seen[curr] = 1;

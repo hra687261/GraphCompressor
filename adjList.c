@@ -1,11 +1,7 @@
 #include "adjList.h"
 
-
-
 /**
- * Initiates an AdjList
- * 
- * @return a reference to the AdjList
+ * Inits an AdjList
  */
 AdjList *make_AdjList() 
 {
@@ -27,13 +23,10 @@ void free_AdjList(AdjList *al)
 	free (al);
 }
 
-
 /**
- * Loads an undirected graph into an Adjlist
- * 
- * @param path path to a file containing and an list of edges 
- *             (pairs of ints in a line separated by a space)
- * @return the loaded AdjList
+ * Loads an undirected graph into an Adjlist.
+ * from a  file containing a list of edges 
+ * (pairs of positive number in a line separated by a space)
  */
 AdjList *load_AdjListU(char *path) 
 {
@@ -88,10 +81,8 @@ AdjList *load_AdjListU(char *path)
 
 /**
  * Loads a directed graph into an Adjlist
- * 
- * @param path path to a file containing and an list of edges 
- *             (pairs of ints in a line separated by a space)
- * @return the loaded AdjList
+ * from a  file containing a list of edges 
+ * (pairs of positive number in a line separated by a space)
  */
 AdjList *load_AdjList(char *path)
 {
@@ -138,6 +129,10 @@ AdjList *load_AdjList(char *path)
 	return g;
 }
 
+
+/**
+ * prints an AdjList
+ */
 void print_AdjList(AdjList *al) 
 {
 	for (uint64_t i = 0; i < al->n+1; i++)

@@ -40,9 +40,6 @@ uint64_t inv_func(uint64_t val, uint64_t x)
     return val - (x + 1) / 2;
 }
 
-// tail -n +5 
-// sort -n -k1,1  -k2,2 -o
-// sed -i -e 's/\t/ /g'
 
 void renumbering(char *path, uint8_t sv)
 {

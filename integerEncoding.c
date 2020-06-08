@@ -3,21 +3,34 @@
 
 uint8_t g_k = 2; // the k of zeta_k code ==2 by default must be set with setK for other values
 
+/**
+ * Sets the value of g_k to newk (shrinking factor))
+ */
 void setK(uint8_t newk)
 {
   g_k = newk;
 }
 
+/**
+ * returns the valuie ok g_k
+ */
 uint8_t getK()
 {
   return g_k;
 }
 
+/**
+ * prints the value of g_k
+ */
 void printK()
 {
   fprintf(stderr, "%u\n", g_k);
 }
 
+/**
+ * Encodes the value "val", into the array "arr", 
+ * starting at the bit "*u", using unary encoding.
+ */
 uint8_t *unary_encoding(uint8_t *arr, uint64_t *u, uint64_t val)
 {
   uint64_t pos = *u;
@@ -25,6 +38,10 @@ uint8_t *unary_encoding(uint8_t *arr, uint64_t *u, uint64_t val)
   return arr;
 }
 
+/**
+ * Encodes the value "val", into the array "arr", 
+ * starting at the bit "*u", using gamma encoding.
+ */
 uint8_t *gamma_encoding(uint8_t *arr, uint64_t *u, uint64_t val)
 {
   if (val == 0) {
@@ -47,6 +64,10 @@ uint8_t *gamma_encoding(uint8_t *arr, uint64_t *u, uint64_t val)
   return arr;
 }
 
+/**
+ * Encodes the value "val", into the array "arr", 
+ * starting at the bit "*u", using delta encoding.
+ */
 uint8_t *delta_encoding(uint8_t *arr, uint64_t *u, uint64_t val)
 {
   if (val == 0) {
@@ -69,6 +90,10 @@ uint8_t *delta_encoding(uint8_t *arr, uint64_t *u, uint64_t val)
   return arr;
 }
 
+/**
+ * Encodes the value "val", into the array "arr", 
+ * starting at the bit "*u", using nibble encoding.
+ */
 uint8_t *nibble_encoding(uint8_t *arr, uint64_t *u, uint64_t val)
 {
   uint64_t l = 0, v1 = 1, v2 = 2,
@@ -117,6 +142,10 @@ uint8_t *nibble_encoding(uint8_t *arr, uint64_t *u, uint64_t val)
   return arr;
 }
 
+/**
+ * Encodes the value "val", into the array "arr", 
+ * starting at the bit "*u", using the minimal binary encoding method
+ */
 uint8_t *minimal_binary_encode(uint8_t *arr, uint64_t *u, uint64_t x, uint64_t intr)
 {
   uint64_t s, z, i, pos, v,
@@ -147,6 +176,10 @@ uint8_t *minimal_binary_encode(uint8_t *arr, uint64_t *u, uint64_t x, uint64_t i
   return arr;
 }
 
+/**
+ * Encodes the value "val", into the array "arr", 
+ * starting at the bit "*u", using the zeta_k encoding.
+ */
 uint8_t *zeta_k_encoding(uint8_t *arr, uint64_t *u, uint64_t val)
 {
   val++;
@@ -164,6 +197,11 @@ uint8_t *zeta_k_encoding(uint8_t *arr, uint64_t *u, uint64_t val)
   return arr;
 }
 
+
+/**
+ * Decodes a value, from the array "arr", 
+ * starting at the bit "*s", and returning the decoed values.
+ */
 uint64_t unary_decoding(uint8_t *arr, uint64_t *s)
 {
   uint64_t cpt = 0;
@@ -178,6 +216,10 @@ uint64_t unary_decoding(uint8_t *arr, uint64_t *s)
   return cpt;
 }
 
+/**
+ * Decodes a value, from the array "arr", 
+ * starting at the bit "*s", and returning the decoed values.
+ */
 uint64_t gamma_decoding(uint8_t *arr, uint64_t *s)
 {
   uint64_t cpt = * s,
@@ -198,6 +240,10 @@ uint64_t gamma_decoding(uint8_t *arr, uint64_t *s)
   return val;
 }
 
+/**
+ * Decodes a value, from the array "arr", 
+ * starting at the bit "*s", and returning the decoed values.
+ */
 uint64_t delta_decoding(uint8_t *arr, uint64_t *s)
 {
   uint64_t cpt = *s,
@@ -219,6 +265,10 @@ uint64_t delta_decoding(uint8_t *arr, uint64_t *s)
   return val;
 }
 
+/**
+ * Decodes a value, from the array "arr", 
+ * starting at the bit "*s", and returning the decoed values.
+ */
 uint64_t nibble_decoding(uint8_t *arr, uint64_t *s)
 {
   uint64_t cpt = *s,
@@ -243,6 +293,10 @@ uint64_t nibble_decoding(uint8_t *arr, uint64_t *s)
   return val;
 }
 
+/**
+ * Decodes a value, from the array "arr", 
+ * starting at the bit "*s", and returning the decoed values.
+ */
 uint64_t zeta_k_decoding(uint8_t *arr, uint64_t *s)
 {
   uint64_t val = 0, pos, p = 1, i, left, res,
@@ -265,6 +319,10 @@ uint64_t zeta_k_decoding(uint8_t *arr, uint64_t *s)
   return res - 1;
 }
 
+
+/**
+ * Encodes an array of values
+ */
 uint8_t *array_encoding( uint64_t n,
   uint8_t *encoding_function(uint8_t *arr, uint64_t *u, uint64_t val),
   uint64_t *u,  uint64_t *arr)
@@ -277,6 +335,9 @@ uint8_t *array_encoding( uint64_t n,
   return res;
 }
 
+/**
+ * Decodes an array of values 
+ */
 uint64_t *array_decoding(uint8_t *arr,
   uint64_t decoding_function(uint8_t *arr, uint64_t *s),
   uint64_t n)
@@ -294,7 +355,7 @@ uint64_t unary_expl(uint64_t val)
 }
 
 /**
- * returns the number of bits that val will take it's coded using the gamma code
+ * returns the number of bits that val will take if it's coded using the gamma code
  */
 uint64_t gamma_expl(uint64_t val)
 {
@@ -310,7 +371,7 @@ uint64_t gamma_expl(uint64_t val)
 }
 
 /**
- * returns the number of bits that val will take it's coded using the delta code
+ * returns the number of bits that val will take if it's coded using the delta code
  */
 uint64_t delta_expl(uint64_t val)
 {
@@ -333,7 +394,7 @@ uint64_t delta_expl(uint64_t val)
 }
 
 /**
- * returns the number of bits that val will take it's coded using the nibble code
+ * returns the number of bits that val will take if it's coded using the nibble code
  */
 uint64_t nibble_expl(uint64_t val)
 {
@@ -349,7 +410,7 @@ uint64_t nibble_expl(uint64_t val)
 }
 
 /**
- * returns the number of bits that val will take it's coded using the zeta_k code
+ * returns the number of bits that val will take if it's coded using the zeta_k code
  */
 uint64_t zeta_k_expl(uint64_t val) {
   val++;
@@ -371,29 +432,48 @@ uint64_t zeta_k_expl(uint64_t val) {
   }
 }
 
+
+/**
+ * An array containing the encoding functions
+ */
 uint8_t *( * encoding_functions[5])(uint8_t *arr, uint64_t *u, uint64_t val) = {
   unary_encoding, gamma_encoding, delta_encoding,
   nibble_encoding, zeta_k_encoding
 };
 
+/**
+ * An array containing the decoding functions
+ */
 uint64_t( * decoding_functions[5])(uint8_t *arr, uint64_t *s) = {
   unary_decoding, gamma_decoding, delta_decoding,
   nibble_decoding, zeta_k_decoding
 };
 
+/**
+ * An array containing the expl functions
+ */
 uint64_t( * expl_functions[5])(uint64_t val) = {
   unary_expl, gamma_expl, delta_expl,
   nibble_expl, zeta_k_expl
 };
 
+/**
+ * retuns the right encoding function ghosen by id
+ */
 uint8_t *( * get_encoding_function(uint8_t id))(uint8_t *arr, uint64_t *u, uint64_t val) {
   return encoding_functions[id];
 }
 
+/**
+ * retuns the right decoding function chosen by id
+ */
 uint64_t( * get_decoding_function(uint8_t id))(uint8_t *arr, uint64_t *s) {
   return decoding_functions[id];
 }
 
+/**
+ * retuns the right expl function chosen by id
+ */
 uint64_t( * get_expl_function(uint8_t id))(uint64_t val) {
   return expl_functions[id];
 }

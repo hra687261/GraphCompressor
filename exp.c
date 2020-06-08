@@ -17,7 +17,7 @@ void idist_to_file(uint64_t *arr, uint64_t n, char *path)
 
 /**
  * Plots the graph associated with a file of integers located at file_path,
- * it's supposed to contain one integer by lane and plot their distribution curve
+ * it's supposed to contain one integer by line and plot their distribution curve
  */
 void plot_idfile(char *file_path)
 {
@@ -39,8 +39,8 @@ void plot_idfile(char *file_path)
 }
 
 /**
- * takes and encoding function, a decoding function, a number nb_vals that's the number of values,
- * and array containing a values that will be encoded and a value 'print" saying whether or not
+ * takes an encoding function, a decoding function, a number nb_vals that's the number of values,
+ * and array containing the values that will be encoded and a value 'print" saying whether or not
  * to print the result of the compression
  * the function encodes the n values from the array
  * then decodes them and makes sure that the decoded values are equal to the coded ones
@@ -48,9 +48,8 @@ void plot_idfile(char *file_path)
 void single_test(
   uint8_t *encoding_function(uint8_t *arr, uint64_t *u, uint64_t val),
   uint64_t decoding_function(uint8_t *arr, uint64_t *s),
-  uint64_t nb_vals,
-  uint64_t *arr,
-  uint8_t print) {
+  uint64_t nb_vals, uint64_t *arr, uint8_t print)
+{
   uint64_t i, *res, u;
   uint8_t *b_arr;
 
@@ -130,12 +129,13 @@ void test_uniform(uint64_t nb_vals, char *file_name, uint64_t max)
 
   idist_to_file(arr, nb_vals, file_path);
   plot_idfile(file_path);
-
+  
+  free(arr);
   free(file_path);
 }
 
 /**
- * tests the poisson distribution generationg function
+ * tests the poisson distribution generating function
  * plots the curve of the distribution of the generated values
  */
 void test_poisson(uint64_t nb_vals, char *file_name, double lambda)
@@ -153,6 +153,7 @@ void test_poisson(uint64_t nb_vals, char *file_name, double lambda)
   free(arr);
   free(file_path);
 }
+
 /**
  * tests the power distribution generationg function
  * plots the curve of the distribution of the generated values
@@ -176,6 +177,8 @@ void test_power(uint64_t nb_vals, char *file_name, double alpha, uint64_t n)
 /**
  * tests the binomial distribution generationg function
  * plots the curve of the distribution of the generated values
+ * n: number of trials
+ * p: in [0,1] the probably of success of a trial 
  */
 void test_binomial(uint64_t nb_vals, char *file_name, uint64_t n, double p)
 {
@@ -265,6 +268,10 @@ void cmp_incr_int_sec(uint64_t nb_vals, char *path) {
   comp_enc(arr, nb_vals, path);
 }
 
+/**
+ * Calculates the expected length on encoding the values in the array "arr"
+ * when using the encoding function associated with the expl function
+ */
 double exp_val_intl(uint64_t *arr, uint64_t nbvals, uint64_t expl_function(uint64_t val)) {
   double res = 0.;
   uint64_t mv = 0, i, * fl, *expll;
@@ -291,6 +298,11 @@ double exp_val_intl(uint64_t *arr, uint64_t nbvals, uint64_t expl_function(uint6
   return res;
 }
 
+/**
+ * Generates "nbvals" values using the uniform ditribution generation function
+ * calculates the expected length of encoding the array by all the encoding 
+ * functions, stores the values in a file, and plots the fils
+ */
 void exp_vals_uniform(uint64_t nbvals, uint64_t upperbound, char *filepath)
 {
   FILE *data = fopen(filepath, "w");
@@ -335,6 +347,12 @@ void exp_vals_uniform(uint64_t nbvals, uint64_t upperbound, char *filepath)
   free(command);
 }
 
+/**
+ * Generates "nbvals" values using the power law ditribution generation function
+ * calculates the expected length of encoding the array by all the encoding 
+ * functions, stores the values in a file, and plots the fils
+ * mv: max value for the power law distribution
+ */
 void exp_vals_power(uint64_t nbvals, uint64_t mv, char *filepath)
 {
   FILE *data = fopen(filepath, "w");
@@ -381,6 +399,11 @@ void exp_vals_power(uint64_t nbvals, uint64_t mv, char *filepath)
   free(command);
 }
 
+/**
+ * Generates "nbvals" values using the poisson ditribution generation function
+ * calculates the expected length of encoding the array by all the encoding 
+ * functions, stores the values in a file, and plots the fils
+ */
 void exp_vals_poisson(uint64_t nbvals, char *filepath)
 {
   FILE *data = fopen(filepath, "w");
@@ -426,6 +449,11 @@ void exp_vals_poisson(uint64_t nbvals, char *filepath)
   free(command);
 }
 
+/**
+ * Generates "nbvals" values using the binomial ditribution generation function
+ * calculates the expected length of encoding the array by all the encoding 
+ * functions, stores the values in a file, and plots the fils
+ */
 void exp_vals_binomial(uint64_t nbvals, char *filepath)
 {
   FILE *data = fopen(filepath, "w");

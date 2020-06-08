@@ -25,8 +25,7 @@ void write_CompAdjListG(CompAdjListG *alg, uint8_t id, char *path);
 CompAdjListG *read_CompAdjListG(char *path, uint8_t *id);
 
 uint64_t *bfs_CompAdjListG(
-  CompAdjListG *alg,uint64_t curr,
-  uint8_t *seen,uint64_t *nbvals,
+  CompAdjListG *alg, uint64_t curr, uint64_t *nbvals,
   uint64_t decoding_function(uint8_t *arr,uint64_t *s));
 
 #endif 

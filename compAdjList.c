@@ -1,7 +1,7 @@
 #include "compAdjList.h"
 
 /**
- * Frees the CompAdjList passed as a parameter
+ * Frees a CompAdjList and it's content
  */
 void free_CompAdjList(CompAdjList *cal) {
   free(cal->cd);
@@ -10,21 +10,23 @@ void free_CompAdjList(CompAdjList *cal) {
 }
 
 /**
- * loads a cCompAdjList from a file 
- * the file must contain a list of edges, with a pair of postive integers separated with a space 
- * the file also needs to be sorted  by the first then the second column.
+ * Loads a CompAdjList from a file containing an edgelist,
+ * "path" is the path to the file, the file must contain on every line 
+ * a pair of positive numbers x y, separated by a space, in which x->y is a link,
+ * the list needs to be sorted in increasing order by the first, then the 
+ * second column.
  * 
- * @param u: writing pointer, at the end, it points to the first bit 
- *           after the last coded bit in the array containing successor lists
- * @param ws: window size
- * @param mrc: max ref count
- * @param threshold: minimum length of an interval
- * @return a reference to the loaded CompAdjList
+ * "*u" points to first bit after the last used bit for the array of 
+ * compressed successor lists.
+ * jump: the offsets of  [0, J, 2*J ...] will be stored in cd (for more
+ * info go to README).
+ * ws: the window size.
+ * mrc: max ref count.
+ * threshold: minimum length of an interval.
  */
 CompAdjList *load_CompAdjList(char *path,
   uint8_t *encoding_function(uint8_t *arr, uint64_t *u, uint64_t val),
-  uint64_t expl_function(uint64_t val),
-  uint64_t *u,
+  uint64_t expl_function(uint64_t val), uint64_t *u,
   uint64_t jump, uint64_t ws,
   uint64_t mrc, uint64_t threshold) {
   uint64_t i, j;
@@ -35,9 +37,8 @@ CompAdjList *load_CompAdjList(char *path,
   cal->ws = ws;
   cal->th = threshold;
   uint64_t v1, v2,
-  // upper bound of the memory size we'll need to allocate (arbitrary)
-  alloc_ub = 0,
-
+    // upper bound of the memory size we'll need to allocate (arbitrary)
+    alloc_ub = 0,
     precv = 0,
     max_deg = 0,
     new_deg = 0;
@@ -55,7 +56,7 @@ CompAdjList *load_CompAdjList(char *path,
     }
     cal->n = max3(cal->n, v1, v2);
     cal->e++;
-    alloc_ub += expl_function(v2) * 3;
+    alloc_ub += expl_function(v2)*3;
   }
   if (new_deg > max_deg)
     max_deg = new_deg;
@@ -63,7 +64,6 @@ CompAdjList *load_CompAdjList(char *path,
   cal->md = max_deg;
   cal->cd = calloc(cal->cds, sizeof(uint64_t));
   cal->adj = calloc(alloc_ub / 8 + 1, sizeof(uint8_t));
-
   uint64_t wa_len = ws + 1,
 
     // max number of intervals 
@@ -552,7 +552,9 @@ CompAdjList *load_CompAdjList(char *path,
 }
 
 /**
- * returns the position of the node's successor list in the graph
+ * Returns the bit from which the encoding of the list of successors
+ * of the node "node" starts, in the array of successor lists of 
+ * the graph stored in the CompAdjList.
  */
 uint64_t get_node_addrs(
   uint64_t node, CompAdjList *cal,
@@ -569,7 +571,7 @@ uint64_t get_node_addrs(
 }
 
 /**
- * Stores a CompAdjList in a file
+ * Stores a CompAdjList in a file.
  */
 void write_CompAdjList(CompAdjList *cal, uint8_t id, char *path)
 {
@@ -603,12 +605,10 @@ void write_CompAdjList(CompAdjList *cal, uint8_t id, char *path)
 }
 
 /**
- * Reads a CompAdjList from a file
+ * Reads a CompAdjList from a file.
  * 
- * @param path: file containing the stored CompAdjList.
- * @param id: reference to a unint8, in which the id of the function that was used 
- *            to encode the successor lists of the CompAdjList will be stored.
- * @return reference to the read CompAdjList
+ * id: pointer to a uint8_t, in which the id of the function that was used 
+ *     to encode the successor lists of the CompAdjList will be stored.
  */
 CompAdjList *read_CompAdjList(char *path, uint8_t *id)
 {
@@ -650,20 +650,10 @@ CompAdjList *read_CompAdjList(char *path, uint8_t *id)
 
 /**
  * Decodes the list of successors of the node "node" and stores it in the array 
- * pointed to by the pointer "dest" and which has it's left sorted in "*dlen".
- * 
- * @param cal: reference to the CompAdjList.
- * @param node: the source node of the list of successors we want to decode.
- * @param dest: a reference to the array where the list of successors will be stored.
- * @param dlen: a reference to the value that will hold the length of "dlen".
- * @param isfc: is equal to 1, if this is the first call, and to 0 if it's recursive
- * @param decoding_function: the function that well decode the CompAdjList's lists 
- *                           of successors.
- * @param m_nb_intrs: reference to the array in which the found intervals in a successor 
- *                    list will be stored, if it's NULL, it will be created,
- *                     
- *                  
- * @param intrvs:
+ * pointed to by the pointer "dest" and which has it's length stored in "*dlen".
+ * "*intrvs" can be null in the first call, we pass as a parameter to be able
+ * to reuse it in recursive calls. isfc==1 if it's the first call and ==0 if
+ * it's a recursive call.
  */
 void decode_CompAdjList(CompAdjList *cal, uint64_t node,
   uint64_t *dest, uint64_t *dlen, uint8_t isfc,
@@ -762,6 +752,15 @@ void decode_CompAdjList(CompAdjList *cal, uint64_t node,
     free(intrvs);
 }
 
+/**
+ * Runs the Breadth-First Search algorithm on the graph contained in
+ * the CompAdjList. the BFS starts from "curr", the list of nodes it
+ * visited is returned, and the length of that list is stored in 
+ * "*nbvals".
+ * This version is slow, as it uses the function decode_CompAdjList
+ * which is slow as it decodes the whole reference chain of every
+ * successor list it's called upon.
+ */
 uint64_t *bfs_CompAdjList(
   CompAdjList *cal, uint64_t curr, uint64_t *nbvals,
   uint64_t decoding_function(uint8_t *arr, uint64_t *s))
@@ -800,6 +799,17 @@ uint64_t *bfs_CompAdjList(
   return file;
 }
 
+
+/**
+ * does the same thing as decode_CompAdjList, the difference is in the 
+ * performance, this one keeps an array of arrays "hist", in which
+ * hist[i]==NULL if the node i's successor list wan't decoded before
+ * and it's equal to that successor list if it was decoded,
+ * and lens[i] contains the length of the successor list of i 
+ * if i's successor list was decoded before.
+ * isfc has to be equal 1 if it's first call, it's equal to 0
+ * if it's a recursive call.
+ */
 void decode_CompAdjList_bis(CompAdjList *cal, uint64_t node,
   uint64_t *dest, uint64_t *dlen, uint8_t isfc,
   uint64_t decoding_function(uint8_t *arr, uint64_t *s),
@@ -911,13 +921,9 @@ void decode_CompAdjList_bis(CompAdjList *cal, uint64_t node,
 }
 
 /**
- * Run the Breadth-First Search 
- * 
- * @param cal 
- * @param curr 
- * @param nbvals 
- * @param decoding_function 
- * @return uint64_t* 
+ * Runs the Breadth-First Search algorithm, but it's faster that the previous one
+ * since it uses decode_CompAdjList_bis instead of decode_CompAdjList, that makes it
+ * faster but it consumes more memory.
  */
 uint64_t *bfs_CompAdjList_bis(
   CompAdjList *cal, uint64_t curr, uint64_t *nbvals,
@@ -968,6 +974,16 @@ uint64_t *bfs_CompAdjList_bis(
   return file;
 }
 
+
+
+/**
+ * decodes successor lists in a sequential manner, window_succ,
+ * window_nodes and window_lens, must have the legnth of the 
+ * the size of the window +1, decodes the next sucessor list in 
+ * the array of successor lists, the source node of that successor
+ * list is stored in "*ldecp", if the node "*ldecp" doesn't have 
+ * any successors, then no new successor list is added.
+ */
 void decode_with_window(
   CompAdjList *cal, uint64_t node,
   uint64_t *window_succ,
@@ -1083,25 +1099,22 @@ void decode_with_window(
 }
 
 /**
- * normalizes the pagerank of every node
- * by deviding it by the 1-norm of the pagerank vector
+ * normalizes the pagerank of every node by deviding every cell c[i]
+ * in the array by the 1-norm of the pagerank vector.
+ * (if the node i isn't a sink
  */
-void normalize(CompAdjList *cal, uint8_t *has_successors, double *pr)
+void normalize(CompAdjList *cal, double *pr)
 {
   uint64_t i;
   double one_norm = 0;
-
   for (i = 0; i < cal->n + 1; i++)
-    if (has_successors[i])
-      one_norm += pr[i];
-
+    one_norm += pr[i];
   for (i = 0; i < cal->n + 1; i++)
-    if (has_successors[i])
-      pr[i] /= one_norm;
+    pr[i] += (1-one_norm)/(cal->n+1);
 }
 
 /**
- * Makes and returns an array of 1 and 0, where a cell i is equal to 1
+ * Makes and returns an array of 1s and 0s, where a cell i is equal to 1
  * if the node i in the compressed graph cal has successors and 0 if it doesn't
  */
 uint8_t *mk_has_successors(
@@ -1127,7 +1140,7 @@ double *power_iteration(
   CompAdjList *cal, uint64_t nb_it, double alpha,
   uint64_t decoding_function(uint8_t *arr, uint64_t *s)) 
 {
-  uint64_t i, in , j, ldecp = 0;
+  uint64_t i , j, ldecp = 0;
   double *new_pr = malloc((cal->n + 1) * sizeof(double)),
     *pr = malloc((cal->n + 1) * sizeof(double));
   uint8_t *has_succ = mk_has_successors(cal, decoding_function);
@@ -1138,28 +1151,36 @@ double *power_iteration(
     *window_lens = calloc((cal->n + 1), sizeof(uint64_t));
 
   for (i = 0; i < cal->n + 1; i++) {
-    pr[i] = 0.0;
-    new_pr[i] = 0.0;
+    pr[i] = 0.;
+    new_pr[i] = 0.;
   }
 
-  for (i = 0; i < nb_it; i++) {
-    //iterate over all the nodes
-    for ( in = 0; in < cal->n + 1; in ++) {
+
+  for (uint64_t it = 0; it < nb_it; it++) {
+    /**       
+     * for each node i:
+     *    if i has successors:
+     *      for each k successor of i, new_pr[k] += pr[i] * (1/nb_successors[i])
+     *    else:
+     *      new_pr[i] += (1/nb_nodes)
+     */
+    for ( i = 0; i < cal->n + 1; i ++) 
       if (has_succ[i]) {
         decode_with_window(cal, i, window_succ,
           window_nodes, window_lens, &
           ldecp, decoding_function);
-        for (j = 0; j < window_lens[ldecp]; j++) {
+        for (j = 0; j < window_lens[ldecp]; j++) 
           new_pr[window_succ[ldecp * cal->md + j]] += pr[i] * (1 / window_lens[ldecp]);
-        }
+      } else {
+        new_pr[i] += (1. / (cal->n + 1));
       }
-    }
-    for ( in = 0; in < cal->n + 1; in ++) {
+    
+    for ( i = 0; i < cal->n + 1; i ++) {
       if (has_succ[i])
-        pr[ in ] = (1. - alpha) * new_pr[ in ] + alpha * (1. / (cal->n + 1));
-      new_pr[ in ] = 0;
+        pr[ i ] = (1. - alpha) * new_pr[ i ] + alpha * (1. / (cal->n + 1));
+      new_pr[ i ] = 0.;
     }
-    normalize(cal, has_succ, pr);
+    normalize(cal, pr);
   }
   free(new_pr);
   free(has_succ);
@@ -1169,3 +1190,4 @@ double *power_iteration(
 
   return pr;
 }
+

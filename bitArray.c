@@ -1,7 +1,7 @@
 #include "bitArray.h"
 
 /**
- * Creates and allocates an array of bytes big enough for  NB_BYTES_INCR*8 bits
+ * Creates and allocates an array of bytes big enough for NB_BYTES_INCR*8 bits
  */
 uint8_t *make_byte_array()
 {
@@ -18,8 +18,8 @@ uint8_t *make_byte_array_z()
 }
 
 /**
- * Decreases the allocated memory for a byte array 
- * for it to be just enough to fit the used memory by the BitArray
+ * Changers the allocated memory for a byte array
+ * to be exactly big enough to fit "*u" bits
  */
 uint8_t *adjust_allocation(uint8_t *arr, uint64_t *u)
 {
@@ -64,7 +64,7 @@ uint8_t read_nth_bit(uint8_t *arr, uint64_t n)
 }
 
 /**
- * Sets the nth (to 1)
+ * Sets the nth bit to 1
  */
 void set_nth_bit(uint8_t *arr, uint64_t *u, uint64_t n)
 {

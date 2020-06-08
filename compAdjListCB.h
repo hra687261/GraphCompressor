@@ -34,8 +34,7 @@ void write_CompAdjListCB(CompAdjListCB *calcb, uint8_t id, char *path);
 CompAdjListCB *read_CompAdjListCB(char *path, uint8_t *id);
 
 uint64_t *bfs_CompAdjListCB(
-  CompAdjListCB *calcb, uint64_t curr,
-  uint8_t *seen, uint64_t *nbvals,
+  CompAdjListCB *calcb, uint64_t curr, uint64_t *nbvals,
   uint64_t decoding_function(uint8_t *arr, uint64_t *s));
 
 #endif

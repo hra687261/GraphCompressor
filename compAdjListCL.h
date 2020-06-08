@@ -30,8 +30,7 @@ void write_CompAdjListCL(CompAdjListCL *alg, uint8_t id, char *path);
 CompAdjListCL *read_CompAdjListCL(char *path, uint8_t *id);
 
 uint64_t *bfs_CompAdjListCL(
-  CompAdjListCL *alg,uint64_t curr,
-  uint8_t *seen,uint64_t *nbvals,
+  CompAdjListCL *alg, uint64_t curr, uint64_t *nbvals,
   uint64_t decoding_function(uint8_t *arr,uint64_t *s));
   
 #endif 

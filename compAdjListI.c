@@ -1,6 +1,8 @@
 #include "compAdjListI.h"
 
-
+/**
+ * Frees the CompAdjListI passed as a parameter.
+ */
 void free_CompAdjListI(CompAdjListI *cali) {
   free(cali->adj);
   free(cali->cd);
@@ -8,6 +10,20 @@ void free_CompAdjListI(CompAdjListI *cali) {
 }
 
 
+
+/**
+ * Loads a CompAdjListI from a file containing an edgelist,
+ * "path" is the path to the file, the file must contain on every line 
+ * a pair of ints x y, separated by a space, in which x->y is a link,
+ * the list needs to be sorted in increasing order by the first, then the 
+ * second column.
+ * 
+ * "*u" points to first bit after the last used bit for the array of 
+ * compressed successor lists.
+ * ws: the window size.
+ * mrc: max ref count.
+ * threshold: minimum length of an interval.
+ */
 CompAdjListI *load_CompAdjListI(char *path,
   uint8_t *encoding_function(uint8_t *arr, uint64_t *u, uint64_t val),
   uint64_t expl_function(uint64_t val),
@@ -123,7 +139,6 @@ CompAdjListI *load_CompAdjListI(char *path,
     if(ind < cali->e)
       assert(fscanf(file, "%lu %lu", &v1, &v2) == 2);
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////
     if (v1 == window_nodes[c_w_ind] 
       && ind > 0 
       && ind < cali->e) 
@@ -133,7 +148,6 @@ CompAdjListI *load_CompAdjListI(char *path,
       window_pos[tmppos_2] = window_lens[c_w_ind];
       window_lens[c_w_ind]++;
     } else {
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////
       it_w_ind = (c_w_ind + 1) % wcalien;
       c_node = window_nodes[c_w_ind];
       it_node = window_nodes[it_w_ind];
@@ -455,7 +469,12 @@ CompAdjListI *load_CompAdjListI(char *path,
   return cali;
 }
 
-
+/**
+ * Decodes the successor list of the node "node", stores the result
+ * of the decoding in "*dest", and the number of decoded values in 
+ * "*dlen". isfc must be equal to 1 in the first call.
+ * intrvs can be NULL because it will be intialized anyway.
+ */
 void decode_CompAdjListI(CompAdjListI *cali, uint64_t node, 
   uint64_t *dest, uint64_t *dlen, uint8_t isfc,
   uint64_t decoding_function(uint8_t *arr, uint64_t *s),
@@ -559,7 +578,9 @@ void decode_CompAdjListI(CompAdjListI *cali, uint64_t node,
 }
 
 
-
+/**
+ * Stores a CompAdjListI in a file
+ */
 void write_CompAdjListI(CompAdjListI *cali, uint8_t id, char *path)
 {
     FILE *file=fopen(path,"wb");
@@ -587,6 +608,9 @@ void write_CompAdjListI(CompAdjListI *cali, uint8_t id, char *path)
     fclose(file);
 }
 
+/**
+ * Reads a CompAdjListI from a file
+ */
 CompAdjListI *read_CompAdjListI(char *path, uint8_t *id)
 {
     FILE *file=fopen(path,"rb");
@@ -621,6 +645,12 @@ CompAdjListI *read_CompAdjListI(char *path, uint8_t *id)
     return cali;
 }
 
+/**
+ * Runs the Breadth-First Search algorithm on the CompAdjListI
+ * starting from the "curr".
+ * Returns the array of the visited nodes, and stores it's length
+ * in "*nbvals".
+ */
 uint64_t *bfs_CompAdjListI(
     CompAdjListI *cali,uint64_t curr, uint64_t *nbvals,
     uint64_t decoding_function(uint8_t *arr,uint64_t *s))

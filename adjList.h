@@ -11,6 +11,7 @@ typedef struct _adjlist
 	uint64_t *adj; //concatenated lists of neighbors of all nodes
 }AdjList;
 
+
 AdjList *make_AdjList();
 
 void free_AdjList(AdjList *al);
@@ -20,5 +21,6 @@ AdjList *load_AdjListU(char *path);
 AdjList *load_AdjList(char *path);   
 
 void print_AdjList(AdjList *al);
+
 
 #endif

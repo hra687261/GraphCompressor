@@ -27,8 +27,6 @@
     double exp_val_intl(uint64_t *arr, uint64_t nbvals, uint64_t expl_function(uint64_t val));
 
  
-    void exp_vals_uniform(uint64_t nbvals, uint64_t upperbound, char *filepath);
-
     void exp_vals_power(uint64_t nbvals, uint64_t mv, char *filepath);
 
     void exp_vals_poisson(uint64_t nbvals, char *filepath);

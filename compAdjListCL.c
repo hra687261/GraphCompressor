@@ -1,5 +1,8 @@
 #include "compAdjListCL.h"
 
+/**
+ * Frees a CompAdjListCL and it's content
+ */
 void free_CompAdjListCL(CompAdjListCL *calcb)
 {
   free(calcb->adj);
@@ -7,6 +10,19 @@ void free_CompAdjListCL(CompAdjListCL *calcb)
   free(calcb);
 }
 
+
+/**
+ * Loads a CompAdjListCL from a file containing an edgelist,
+ * "path" is the path to the file, the file must contain on every line 
+ * a pair of positive numbers x y, separated by a space, in which x->y is a link,
+ * the list needs to be sorted in increasing order by the first, then the 
+ * second column.
+ * 
+ * "*u" points to first bit after the last used bit for the array of 
+ * compressed successor lists.
+ * ws: the window size.
+ * mrc: max ref count.
+ */
 CompAdjListCL *load_CompAdjListCL(char *path,
   uint8_t *encoding_function(uint8_t *arr, uint64_t *u, uint64_t val),
   uint64_t expl_function(uint64_t val),
@@ -274,6 +290,10 @@ CompAdjListCL *load_CompAdjListCL(char *path,
   return calcb;
 }
 
+/**
+ * Decodes the list of successors of the node "node" and stores them in the array 
+ * pointed to by the pointer "dest" and which has it's length stored in "*dlen".
+ */
 void decode_CompAdjListCL(CompAdjListCL *calcb, uint64_t node,
   uint64_t *dest, uint64_t *dlen,
   uint64_t decoding_function(uint8_t *arr, uint64_t *s))
@@ -304,6 +324,9 @@ void decode_CompAdjListCL(CompAdjListCL *calcb, uint64_t node,
   }
 }
 
+/**
+ * Stores a CompAdjListCL in a file.
+ */
 void write_CompAdjListCL(CompAdjListCL *calcb, uint8_t id, char *path)
 {
   FILE *file = fopen(path, "wb");
@@ -328,6 +351,12 @@ void write_CompAdjListCL(CompAdjListCL *calcb, uint8_t id, char *path)
   fclose(file);
 }
 
+/**
+ * Reads a CompAdjListCL from a file.
+ * 
+ * id: pointer to a uint8_t, in which the id of the function that was used 
+ *     to encode the successor lists of the CompAdjListCB will be stored.
+ */
 CompAdjListCL *read_CompAdjListCL(char *path, uint8_t *id)
 {
   FILE *file = fopen(path, "rb");
@@ -358,9 +387,12 @@ CompAdjListCL *read_CompAdjListCL(char *path, uint8_t *id)
   return calcb;
 }
 
+/**
+ * Runs the Breadth-First Search algorithm on the graph stored in the CompAdjListCL
+ * starting from the node "curr", 
+ */
 uint64_t *bfs_CompAdjListCL(
-  CompAdjListCL *calcb, uint64_t curr,
-  uint8_t *seen, uint64_t *nbvals,
+  CompAdjListCL *calcb, uint64_t curr, uint64_t *nbvals,
   uint64_t decoding_function(uint8_t *arr, uint64_t *s))
 {
   uint64_t v,
@@ -370,11 +402,7 @@ uint64_t *bfs_CompAdjListCL(
     dlen = 0;
   *nbvals = 0;
 
-  if (seen == NULL) {
-    seen = calloc(calcb->n + 1, sizeof(uint8_t));
-  } else
-  if (seen[curr] == 1)
-    return NULL;
+  uint8_t *seen = calloc(calcb->n + 1, sizeof(uint8_t));
 
   file[e_file++] = curr;
   seen[curr] = 1;
