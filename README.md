@@ -145,15 +145,16 @@ Overall time = 0h0m41s
 
 # Code repartition:
 
-adjList.c/.h: a simple adjacency list implementation, for comparaison.
-bitArray.c/.h: a set of functions to do bitwise operations on an array of uint8_t.
-integerEncoding.c/.h: a set of functions implementing some compression algorithm, allowing us to encode and decode uint64_t values into an array of uint8_t.
-integerGeneration.c/.h: a set of functions to generate positive integers following some discrete distribution (Poisson, Binomial and Zipf's power law), they were used for testing.
-exp.c/.h: some experimentations.
-tools.c/.h: usefull functions.
-CompAdjListG.c/.h: compressed adjacency list using the gaps technique.
-CompAdjListCL.c/.h: compressed adjacency list using the copy lists technique, and gaps for residual values.
-CompAdjListCB.c/.h: compressed adjacency list using the copy blocks technique, and gaps for residual values.
-CompAdjListI.c/.h: compressed adjacency list using the copy blocks along with the intervals technique, and gaps for residual values.
-CompAdjList.c/.h: compressed adjacency list using the copy blocks along with the intervals technique, and gaps for residual values, also stores the offset array using the "jump" parameter.
+
+ - adjList.c/.h: a simple adjacency list implementation, for comparaison.
+ - bitArray.c/.h: a set of functions to do bitwise operations on an array of uint8_t.
+ - integerEncoding.c/.h: a set of functions implementing some compression algorithm, allowing us to encode and decode uint64_t values into an array of uint8_t.
+ - integerGeneration.c/.h: a set of functions to generate positive integers following some discrete distribution (Poisson, Binomial and Zipf's power law), they were used for testing.
+ - exp.c/.h: some experimentations.
+ - tools.c/.h: usefull functions.
+ - CompAdjListG.c/.h: compressed adjacency list using the gaps technique.
+ - CompAdjListCL.c/.h: compressed adjacency list using the copy lists technique, and gaps for residual values.
+ - CompAdjListCB.c/.h: compressed adjacency list using the copy blocks technique, and gaps for residual values.
+ - CompAdjListI.c/.h: compressed adjacency list using the copy blocks along with the intervals technique, and gaps for residual values.
+ - CompAdjList.c/.h: compressed adjacency list using the copy blocks along with the intervals technique, and gaps for residual values, also stores the offset array using the "jump" parameter.
 
