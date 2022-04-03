@@ -1,5 +1,5 @@
 # GraphCompressor:
-GraphCompressor is a project we realized in our second semester of Master 1 STL - Sorbonne University. It's a reimplementaion in C of the [WebGraph framework](https://webgraph.di.unimi.it/) for handeling and compressing very large graphs, based on https://www.ics.uci.edu/~djp3/classes/2008_01_01_INF141/Materials/p595-boldi.pdf. 5 data structures were implemented, CompAdjListG, CompAdjListCL, CompAdjListCB, CompAdjListI, and the final one CompAdjList.
+GraphCompressor is a project we realized in our second semester of Master 1 STL - Sorbonne University. It's a reimplementation in C of the [WebGraph framework](https://webgraph.di.unimi.it/) for handeling and compressing very large graphs, based on https://www.ics.uci.edu/~djp3/classes/2008_01_01_INF141/Materials/p595-boldi.pdf. 5 data structures were implemented, CompAdjListG, CompAdjListCL, CompAdjListCB, CompAdjListI, and the final one CompAdjList.
 
 # Preprocessing:
 Our codes expect as input filepaths to edge lists, where on every line of the file there is a pair of positive numbers separated by a space, the positive numbers are the nodes, and every line represents a link (or edge). They also need to be sorted by the 1st and the 2nd column, and they should have no header or comment in the beginning of the file.
